@@ -17,3 +17,8 @@ func CreateJobObject(attr *syscall.SecurityAttributes, name string) (syscall.Han
 	}
 	return syscall.Handle(r1), nil
 }
+
+
+func main() {
+	
+}
