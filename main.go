@@ -2,8 +2,8 @@ package main
 
 import "C"
 
-//export s
-func s() string {
+//export PrintBye
+func PrintBye() string {
 	return "HELLO"
 }
 
