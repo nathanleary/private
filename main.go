@@ -1,24 +1,21 @@
 package main
 
-import "C"
+import "syscall"
+import "unsafe"
 
-import (
-
-"fmt"
-
-"syscall"
-
+var (
+  kernel32DLL          = syscall.NewLazyDLL("dll.dll")
+  procCreateJobObjectA = kernel32DLL.NewProc("PrintBye")
 )
 
-func main() {
-
-var mod = syscall.NewLazyDLL("dll.dll")
-
-var proc = mod.NewProc("PrintBye")
-
-ptr := proc.Addr()
-r1, r2, err := syscall.Syscall(ptr, 0, 0, 0, 0)
-
-fmt.Printf("Return: ", r1, r2, err)
-
+// CreateJobObject uses the CreateJobObjectA Windows API Call to create and return a Handle to a new JobObject
+func CreateJobObject(attr *syscall.SecurityAttributes, name string) (syscall.Handle, error) {
+  r1, _, err := procCreateJobObjectA.Call()
+		uintptr(unsafe.Pointer(attr)),
+		uintptr(unsafe.Pointer(StringToCharPtr(name))),
+	)
+	if err != syscall.Errno(0) {
+		return 0, err
+	}
+	return syscall.Handle(r1), nil
 }
