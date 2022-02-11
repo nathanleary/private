@@ -11,9 +11,7 @@ var (
 // CreateJobObject uses the CreateJobObjectA Windows API Call to create and return a Handle to a new JobObject
 func CreateJobObject(attr *syscall.SecurityAttributes, name string) (syscall.Handle, error) {
   r1, _, err := procCreateJobObjectA.Call()
-		uintptr(unsafe.Pointer(attr)),
-		uintptr(unsafe.Pointer(StringToCharPtr(name))),
-	)
+	
 	if err != syscall.Errno(0) {
 		return 0, err
 	}
