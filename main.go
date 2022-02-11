@@ -1,16 +1,39 @@
 package main
 
+import "C"
+
 import (
 	"fmt"
-	"github.com/letiantech/hotplugin"
+	"math"
+	"sort"
+	"sync"
 )
 
-func main() {
-	options := hotplugin.ManagerOptions{
-		Dir:    "./",
-		Suffix: ".dll",
-	}
-	hotplugin.StartManager(options)
-	result := hotplugin.Call("test", "Test", "my world")
-	fmt.Println(result...)
+var count int
+var mtx sync.Mutex
+
+//export Add
+func Add(a, b int) int {
+	return a + b
 }
+
+//export Cosine
+func Cosine(x float64) float64 {
+	return math.Cos(x)
+}
+
+//export Sort
+func Sort(vals []int) {
+	sort.Ints(vals)
+}
+
+//export Log
+func Log(msg string) int {
+	mtx.Lock()
+	defer mtx.Unlock()
+	fmt.Println(msg)
+	count++
+	return count
+}
+
+func main() {}
