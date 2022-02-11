@@ -1,36 +1,23 @@
+/* Zaki - 6 April 2018 - Initial creation to demonstrate DLL call in Golang */
 package main
 
-/*
-int function(int);
-#define DEFINE_JUMPER(x) \
-        void *_godl_##x = (void*)0; \
-        __asm__(".global "#x"\n\t"#x":\n\tmovq _godl_"#x"(%rip),%rax\n\tjmp *%rax\n")
-DEFINE_JUMPER(function);
-*/
-
-
-import "C"
-
 import (
-	"github.com/sudachen/go-dl/dl"
-	"runtime"
-	"unsafe"
+    "fmt"
+    "log"
+    "syscall"
 )
 
-func init() {
-    urlbase := "https://github.com/sudachen/go-dl/releases/download/initial/"
-    if runtime.GOOS == "linux" && runtime.GOARCH == "amd64"{
-        so := dl.Load(
-            dl.Cache("dll.so"),
-            dl.LzmaExternal(urlbase+"libfunction_lin64.lzma"))
-    } else if runtime.GOOS == "windows" && runtime.GOARCH == "amd64" {
-        so := dl.Load(
-            dl.Cache("dll.dll"),
-            dl.LzmaExternal(urlbase+"libfunction_win64.lzma"))
-    }
-    so.Bind("PrintBye",unsafe.Pointer(&C._godl_function))
-}
-
 func main() {
-    C.function(0)
+    h, e := syscall.LoadLibrary("dll.dll")   //Make sure this DLL follows Golang machine bit architecture (64-bit in my case)
+    if e != nil {
+        log.Fatal(e)
+    }
+    defer syscall.FreeLibrary(h)
+    proc, e := syscall.GetProcAddress(h, "PrintBye") //One of the functions in the DLL
+    if e != nil {
+        log.Fatal(e)
+    }
+    
+    n, _, _ := syscall.Syscall9(uintptr(proc), 0, 2, 2, 2, 2, 0, 0, 0, 0, 0)  //Pay attention to the positioning of the parameter
+    fmt.Printf("Hello dll function returns %d\n", n)
 }
