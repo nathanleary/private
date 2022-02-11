@@ -10,7 +10,7 @@
 package main
 
 import "C"
-import "fmt"
+
 
 //export PrintBye
 func PrintBye() string {
