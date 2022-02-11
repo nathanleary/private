@@ -2,11 +2,22 @@ package main
 
 import "C"
 
-//export PrintBye
-func PrintBye() string {
-	return "HELLO"
-}
+import (
+
+"fmt"
+
+"syscall"
+
+)
 
 func main() {
-	// Need a main function to make CGO compile package as C shared library
+
+var mod = syscall.NewLazyDLL("dll.dll")
+
+var proc = mod.NewProc("PrintBye")
+
+ret, _, _ := proc.Call()
+
+fmt.Printf("Return: %d\n", ret)
+
 }
