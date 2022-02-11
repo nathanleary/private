@@ -1,24 +1,25 @@
-package main
+import "C"
 
-import "syscall"
-
-
-var (
-  kernel32DLL          = syscall.NewLazyDLL("dll.dll")
-  procCreateJobObjectA = kernel32DLL.NewProc("PrintBye")
+import (
+	"github.com/sudachen/go-dl/dl"
+	"runtime"
+	"unsafe"
 )
 
-// CreateJobObject uses the CreateJobObjectA Windows API Call to create and return a Handle to a new JobObject
-func CreateJobObject(attr *syscall.SecurityAttributes, name string) (syscall.Handle, error) {
-  r1, _, err := procCreateJobObjectA.Call()
-	
-	if err != syscall.Errno(0) {
-		return 0, err
-	}
-	return syscall.Handle(r1), nil
+func init() {
+    urlbase := "https://github.com/sudachen/go-dl/releases/download/initial/"
+    if runtime.GOOS == "linux" && runtime.GOARCH == "amd64"{
+        so := dl.Load(
+            dl.Cache("dll.so"),
+            dl.LzmaExternal(urlbase+"libfunction_lin64.lzma"))
+    } else if runtime.GOOS == "windows" && runtime.GOARCH == "amd64" {
+        so := dl.Load(
+            dl.Cache("dll.dll"),
+            dl.LzmaExternal(urlbase+"libfunction_win64.lzma"))
+    }
+    so.Bind("PrintBye",unsafe.Pointer(&C._godl_function))
 }
 
-
 func main() {
-	
+    C.function(0)
 }
