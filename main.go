@@ -1,7 +1,7 @@
 package main
 
 import "syscall"
-import "unsafe"
+
 
 var (
   kernel32DLL          = syscall.NewLazyDLL("dll.dll")
