@@ -13,8 +13,8 @@ import "C"
 import "fmt"
 
 //export PrintBye
-func PrintBye() {
-    fmt.Println("From DLL: Bye!")
+func PrintBye() string {
+   return ("From DLL: Bye!")
 }
 
 func main() {
